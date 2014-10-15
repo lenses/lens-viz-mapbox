@@ -1,0 +1,86 @@
+<link rel="import" href="../polymer/polymer.html">
+<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.js'></script> 
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
+
+<!--
+Element providing the ability to create maps with the Mapbox API.
+
+##### Example
+
+    <th-mapbox></th-mapbox>
+
+@element th-mapbox
+@blurb Element providing the ability to create maps with the Mapbox API.
+@status alpha
+@homepage http://github.com/thelmanews/th-mapbox/demo.html
+-->
+<polymer-element name="th-mapbox" attributes="accessToken mapId width height geolocation zoomLevel defaultLat defaultLng">
+
+  <template>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css' rel='stylesheet' />
+    <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css' rel='stylesheet' />
+    <core-style ref="theme"></core-style>
+    <style>
+       #map { 
+        position:absolute; 
+        top:0; 
+        bottom:0;  
+        width: 100%;
+      }
+    </style>
+
+    <div id='map' style="width: {{width}}px; height: {{height}}px;"></div>
+    
+    <!-- SEMI-FUNCTIONAL MENU FOR TOGGLING LAYERS
+    <div id='menu'>
+      <template if="{{layers}}">
+        <template repeat="{{layer, layerIndex in layers}}">
+          <a href="#" class="active" style="z-index: {{layerIndex}}" on-click="{{layerClick}}">{{layer}}</a>
+        </template>
+      </template>
+    </div>
+    --> 
+  </template>
+  
+  <script>
+    Polymer({
+      accessToken: 'pk.eyJ1IjoibmlzaGFiYXRyYSIsImEiOiJxeWNPZ2xFIn0.SJBdrU6DeAZOn0OHbMnfAA', //TODO: replace and store in composer
+      mapId: 'examples.map-i87786ca',
+      layers: ['examples.bike-lanes','examples.bike-locations'],
+      zoomLevel: 12,
+      defaultLat: 38.8922,
+      defaultLng: -77.0348,
+      ready: function() {
+        var self = this,
+            mapContainer = self.$.map;
+        
+        // Assign the access token
+        L.mapbox.accessToken = self.accessToken;
+        
+        // Create the map inside the div, given the mapId, default lat/long and zoomlevel
+        self.map = L.mapbox.map(mapContainer, self.mapId).setView([self.defaultLat,self.defaultLng], self.zoomLevel); 
+
+        // Add layers to map
+        for (var i=0; i<self.layers.length; i++){
+          L.mapbox.tileLayer(self.layers[i]).addTo(self.map);
+        }
+
+        // Add button for geolocation
+        L.control.locate().addTo(self.map); // TODO: make it prompt automatically when geolocation is on
+
+        // TODO: auto color the map based on the theme color
+      
+      // TODO (optional): Add toggle menu functionality: https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/      
+      // },
+      // layerClick: function(e, detail, selection){
+      //   var self = this;
+      //   e.preventDefault();
+      //   e.stopPropagation();
+      //   
+      }
+
+    });
+
+  </script>
+
+</polymer-element>
