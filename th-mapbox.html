@@ -15,7 +15,7 @@ Element providing the ability to create maps with the Mapbox API.
 @status alpha
 @homepage http://github.com/thelmanews/th-mapbox/demo.html
 -->
-<polymer-element name="th-mapbox" extends="th-animated" attributes="accessToken mapId width height geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar">
+<polymer-element name="th-mapbox" extends="th-animated" attributes="accessToken mapId width height layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar">
 
   <template>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css' rel='stylesheet' />
@@ -53,23 +53,13 @@ Element providing the ability to create maps with the Mapbox API.
       </template>
       <div id='map'></div>
     </div>
-    
-    
-    <!-- SEMI-FUNCTIONAL MENU FOR TOGGLING LAYERS
-    <div id='menu'>
-      <template if="{{layers}}">
-        <template repeat="{{layer, layerIndex in layers}}">
-          <a href="#" class="active" style="z-index: {{layerIndex}}" on-click="{{layerClick}}">{{layer}}</a>
-        </template>
-      </template>
-    </div>
-    --> 
+
   </template>
   
   <script>
     Polymer({
-      accessToken: 'pk.eyJ1IjoidGhlbG1hIiwiYSI6Ikd3RUlsTTQifQ.i6bojdSBKd6JHENLKsRjTA', //TODO: store in composer
-      mapId: 'examples.map-i87786ca',
+      accessToken: 'pk.eyJ1IjoidGhlbG1hIiwiYSI6Ikd3RUlsTTQifQ.i6bojdSBKd6JHENLKsRjTA', //TODO: replace and store in composer
+      mapId: '',
       layers: [],
       startingZoom: 12,
       startingLat: 38.8922,
@@ -86,7 +76,11 @@ Element providing the ability to create maps with the Mapbox API.
         
         // Create the map inside the div, given the mapId, default lat/long and zoom
         self.map = L.mapbox.map(mapContainer, self.mapId);
-        self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
+
+        // If starting coordinates given, set view at that point
+        if (self.startingLng && self.startingLng){
+          self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
+        }
 
         // Remove mapbox attribution/branding
         mapContainer.querySelector('.leaflet-control-attribution').remove();
@@ -99,29 +93,19 @@ Element providing the ability to create maps with the Mapbox API.
         // Add button for geolocation
         self.geolocate = L.control.locate({ locateOptions: { maxZoom: self.geolocateZoom }}).addTo(self.map);
 
-
-
       },
       animate: function(){
-        var self = this;
-        
+        var self = this;     
         if (self.geolocation){
           self.geolocate.locate();
         }
-
       },
       reset: function(){
         var self = this;
-        self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
+        if (self.startingLng && self.startingLng){
+          self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
+        }
       }
-
-      // TODO (optional): Add toggle menu functionality: https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/      
-      // },
-      // layerClick: function(e, detail, selection){
-      //   var self = this;
-      //   e.preventDefault();
-      //   e.stopPropagation();
-      //   
 
     });
 
