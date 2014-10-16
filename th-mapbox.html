@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../th-animated/th-animated.html">
 <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.js'></script> 
 <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
 
@@ -7,29 +8,52 @@ Element providing the ability to create maps with the Mapbox API.
 
 ##### Example
 
-    <th-mapbox></th-mapbox>
+    <th-mapbox width="300" height="450" animateOnInit="true"></th-mapbox>
 
 @element th-mapbox
 @blurb Element providing the ability to create maps with the Mapbox API.
 @status alpha
 @homepage http://github.com/thelmanews/th-mapbox/demo.html
 -->
-<polymer-element name="th-mapbox" attributes="accessToken mapId width height geolocation zoomLevel defaultLat defaultLng">
+<polymer-element name="th-mapbox" extends="th-animated" attributes="accessToken mapId width height geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar">
 
   <template>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css' rel='stylesheet' />
     <link href='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css' rel='stylesheet' />
     <core-style ref="theme"></core-style>
     <style>
+       #container {
+        position: absolute;
+       }
        #map { 
-        position:absolute; 
+        position:relative; 
         top:0; 
         bottom:0;  
         width: 100%;
+        height: 100%;
+      }
+      .swipearea {
+        height: 50px;
+        width: 100%;
+        background-color: rgba(0,0,0,0.3);
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        text-align: center;
+        padding: 15px;
+        box-sizing: border-box;
+        color: white;
       }
     </style>
-
-    <div id='map' style="width: {{width}}px; height: {{height}}px;"></div>
+    
+    <div id="container" style="width: {{width}}px; height: {{height}}px;">
+      <template if="{{showSwipeBar}}">
+        <div class="swipearea submainpoint"> Swipe next here </div>
+      </template>
+      <div id='map'></div>
+    </div>
+    
     
     <!-- SEMI-FUNCTIONAL MENU FOR TOGGLING LAYERS
     <div id='menu'>
@@ -44,12 +68,15 @@ Element providing the ability to create maps with the Mapbox API.
   
   <script>
     Polymer({
-      accessToken: 'pk.eyJ1IjoibmlzaGFiYXRyYSIsImEiOiJxeWNPZ2xFIn0.SJBdrU6DeAZOn0OHbMnfAA', //TODO: replace and store in composer
+      accessToken: 'pk.eyJ1IjoidGhlbG1hIiwiYSI6Ikd3RUlsTTQifQ.i6bojdSBKd6JHENLKsRjTA', //TODO: replace and store in composer
       mapId: 'examples.map-i87786ca',
       layers: ['examples.bike-lanes','examples.bike-locations'],
-      zoomLevel: 12,
-      defaultLat: 38.8922,
-      defaultLng: -77.0348,
+      startingZoom: 12,
+      startingLat: 38.8922,
+      startingLng: -77.0348,
+      geolocation: false,
+      geolocateZoom: 10,
+      showSwipeBar: true,
       ready: function() {
         var self = this,
             mapContainer = self.$.map;
@@ -57,8 +84,12 @@ Element providing the ability to create maps with the Mapbox API.
         // Assign the access token
         L.mapbox.accessToken = self.accessToken;
         
-        // Create the map inside the div, given the mapId, default lat/long and zoomlevel
-        self.map = L.mapbox.map(mapContainer, self.mapId).setView([self.defaultLat,self.defaultLng], self.zoomLevel); 
+        // Create the map inside the div, given the mapId, default lat/long and zoom
+        self.map = L.mapbox.map(mapContainer, self.mapId);
+        self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
+
+        // Remove mapbox attribution/branding
+        mapContainer.querySelector('.leaflet-control-attribution').remove();
 
         // Add layers to map
         for (var i=0; i<self.layers.length; i++){
@@ -66,10 +97,24 @@ Element providing the ability to create maps with the Mapbox API.
         }
 
         // Add button for geolocation
-        L.control.locate().addTo(self.map); // TODO: make it prompt automatically when geolocation is on
+        self.geolocate = L.control.locate({ locateOptions: { maxZoom: self.geolocateZoom }}).addTo(self.map);
 
-        // TODO: auto color the map based on the theme color
-      
+
+
+      },
+      animate: function(){
+        var self = this;
+        
+        if (self.geolocation){
+          self.geolocate.locate();
+        }
+
+      },
+      reset: function(){
+        var self = this;
+        self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
+      }
+
       // TODO (optional): Add toggle menu functionality: https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/      
       // },
       // layerClick: function(e, detail, selection){
@@ -77,7 +122,6 @@ Element providing the ability to create maps with the Mapbox API.
       //   e.preventDefault();
       //   e.stopPropagation();
       //   
-      }
 
     });
 
