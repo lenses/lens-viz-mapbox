@@ -70,7 +70,7 @@ Element providing the ability to create maps with the Mapbox API.
     Polymer({
       accessToken: 'pk.eyJ1IjoidGhlbG1hIiwiYSI6Ikd3RUlsTTQifQ.i6bojdSBKd6JHENLKsRjTA', //TODO: replace and store in composer
       mapId: 'examples.map-i87786ca',
-      layers: ['examples.bike-lanes','examples.bike-locations'],
+      layers: [{'layerId': 'examples.bike-lanes'},{'layerId': 'examples.bike-locations'}],
       startingZoom: 12,
       startingLat: 38.8922,
       startingLng: -77.0348,
@@ -93,7 +93,7 @@ Element providing the ability to create maps with the Mapbox API.
 
         // Add layers to map
         for (var i=0; i<self.layers.length; i++){
-          L.mapbox.tileLayer(self.layers[i]).addTo(self.map);
+          L.mapbox.tileLayer(self.layers[i].layerId).addTo(self.map);
         }
 
         // Add button for geolocation
