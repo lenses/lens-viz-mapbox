@@ -1,7 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../th-animated/th-animated.html">
-<script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.js'></script> 
-<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
 
 <!--
 Element providing the ability to create maps with the Mapbox API.
@@ -64,11 +62,13 @@ Element providing the ability to create maps with the Mapbox API.
     </div>
 
   </template>
-  
+  <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.js'></script> 
+  <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
+
   <script>
     Polymer({
       accessToken: 'pk.eyJ1IjoidGhlbG1hIiwiYSI6Ikd3RUlsTTQifQ.i6bojdSBKd6JHENLKsRjTA', //TODO: replace and store in composer
-      mapId: '',
+      mapId: 'examples.map-i87786ca',
       layers: [],
       startingZoom: 12,
       startingLat: 38.8922,
