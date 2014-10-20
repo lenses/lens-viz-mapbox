@@ -108,7 +108,10 @@ Element providing the ability to create maps with the Mapbox API.
       animate: function(){
         var self = this;     
         if (self.geolocation){
-          self.geolocate.locate();
+          setTimeout(function(){
+            self.geolocate.locate();  
+          },2000)
+          
         }
       },
       reset: function(){
