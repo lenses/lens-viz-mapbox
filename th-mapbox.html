@@ -98,7 +98,7 @@ Element providing the ability to create maps with the Mapbox API.
 
         // Add layers to map
         for (var i=0; i<self.layers.length; i++){
-          if(self.layers[i].layerId){
+          if(self.layers[i] && self.layers[i].layerId){
             L.mapbox.tileLayer(self.layers[i].layerId).addTo(self.map);
           }
         }
