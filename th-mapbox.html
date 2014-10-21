@@ -30,10 +30,10 @@ Element providing the ability to create maps with the Mapbox API.
     <style>
        #container {
         position: absolute;
-        top:0;
+        top:-15px;
        }
        #map { 
-        position:relative; 
+        position:absolute; 
         top:0; 
         bottom:0;  
         width: 100%;
@@ -55,10 +55,10 @@ Element providing the ability to create maps with the Mapbox API.
     </style>
     
     <div id="container" style="width: {{width}}px; height: {{height}}px;">
+      <div id='map'></div>
       <template if="{{showSwipeBar}}">
         <div class="swipearea submainpoint"> Swipe next here </div>
       </template>
-      <div id='map'></div>
     </div>
 
   </template>
