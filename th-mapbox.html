@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../core-ajax/core-ajax.html">
 <link rel="import" href="../th-animated/th-animated.html">
 
 <!--
@@ -21,7 +22,7 @@ Element providing the ability to create maps with the Mapbox API.
 @status alpha
 @homepage http://github.com/thelmanews/th-mapbox/demo.html
 -->
-<polymer-element name="th-mapbox" extends="th-animated" attributes="accessToken mapId width height layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar">
+<polymer-element name="th-mapbox" extends="th-animated" attributes="accessTokenRoute accessToken mapId width height layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar">
 
   <template>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css' rel='stylesheet' />
@@ -53,7 +54,14 @@ Element providing the ability to create maps with the Mapbox API.
         color: white;
       }
     </style>
-    
+    <template if="{{accessTokenRoute}}">
+      <core-ajax auto 
+        id="token"
+        url="{{accessTokenRoute}}"
+        handleAs="text"  
+        on-core-response="{{_receiveToken}}">
+      </core-ajax>
+    </template>
     <div id="container" style="width: {{width}}px; height: {{height}}px;">
       <div id='map'></div>
       <template if="{{showSwipeBar}}">
@@ -67,7 +75,7 @@ Element providing the ability to create maps with the Mapbox API.
 
   <script>
     Polymer({
-      accessToken: 'pk.eyJ1IjoidGhlbG1hIiwiYSI6Ikd3RUlsTTQifQ.i6bojdSBKd6JHENLKsRjTA', //TODO: replace and store in composer
+      accessTokenRoute: '/admin/token/THELMA_MAPBOX_TOKEN',
       mapId: 'examples.map-i87786ca',
       layers: [],
       startingZoom: 12,
@@ -78,38 +86,56 @@ Element providing the ability to create maps with the Mapbox API.
       showSwipeBar: true,
       width: 288,
       height: 503,
-      ready: function() {
+      ready: function(){
+        var self = this;
+        if (self.accessToken){
+          self._createMap();
+        }
+      },
+      _receiveToken: function(event, r){
+        var self = this;
+        if (event.detail.response){
+          L.mapbox.accessToken = self.accessToken || event.detail.response; // Assign the access token
+          self._createMap(); 
+        }
+      },
+      _createMap: function(){            
         var self = this,
             mapContainer = self.$.map;
-        
-        // Assign the access token
-        L.mapbox.accessToken = self.accessToken;
-        
-        // Create the map inside the div, given the mapId, default lat/long and zoom
-        self.map = L.mapbox.map(mapContainer, self.mapId);
 
-        // If starting coordinates given, set view at that point
-        if (self.startingLng && self.startingLng){
-          self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
-        }
+          L.mapbox.accessToken = L.mapbox.accessToken || self.accessToken;
 
-        // Remove mapbox attribution/branding
-        mapContainer.querySelector('.leaflet-control-attribution').remove();
-
-        // Add layers to map
-        for (var i=0; i<self.layers.length; i++){
-          if(self.layers[i] && self.layers[i].layerId){
-            L.mapbox.tileLayer(self.layers[i].layerId).addTo(self.map);
+          // Create the map inside the div, given the mapId, default lat/long and zoom
+          self.map = L.mapbox.map(mapContainer, self.mapId);
+          
+          // If starting coordinates given, set view at that point
+          if (self.startingLng && self.startingLng){
+            self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
           }
-        }
 
-        // Add button for geolocation
-        self.geolocate = L.control.locate({ locateOptions: { maxZoom: self.geolocateZoom }}).addTo(self.map);
+          // Remove mapbox attribution/branding
+          mapContainer.querySelector('.leaflet-control-attribution').remove();
 
+          // Add layers to map
+          for (var i=0; i<self.layers.length; i++){
+            if(self.layers[i] && self.layers[i].layerId){
+              L.mapbox.tileLayer(self.layers[i].layerId).addTo(self.map);
+            }
+          }
+
+          // Add button for geolocation
+          self.geolocate = L.control.locate({ locateOptions: { maxZoom: self.geolocateZoom }}).addTo(self.map);
+        
+      },
+      accessTokenChanged: function(){
+        var self = this;
+
+        L.mapbox.accessToken = self.accessToken;
+        self._createMap();
       },
       animate: function(){
         var self = this;     
-        if (self.geolocation){
+        if (self.geolocation && self.map){
           setTimeout(function(){
             self.geolocate.locate();  
           },2000)
