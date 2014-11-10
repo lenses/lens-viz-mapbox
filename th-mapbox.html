@@ -22,7 +22,7 @@ Element providing the ability to create maps with the Mapbox API.
 @status alpha
 @homepage http://github.com/thelmanews/th-mapbox/demo.html
 -->
-<polymer-element name="th-mapbox" extends="th-animated" attributes="accessTokenRoute accessToken mapId width height layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar">
+<polymer-element name="th-mapbox" extends="th-animated" attributes="accessTokenRoute accessToken mapId width height layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar input">
 
   <template>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css' rel='stylesheet' />
@@ -104,9 +104,9 @@ Element providing the ability to create maps with the Mapbox API.
             mapContainer = self.$.map;
 
           L.mapbox.accessToken = L.mapbox.accessToken || self.accessToken;
-
           // Create the map inside the div, given the mapId, default lat/long and zoom
           self.map = L.mapbox.map(mapContainer, self.mapId);
+          // L.marker([77.0367,38.8951]).addTo(self.map);
           
           // If starting coordinates given, set view at that point
           if (self.startingLng && self.startingLng){
@@ -125,16 +125,47 @@ Element providing the ability to create maps with the Mapbox API.
 
           // Add button for geolocation
           self.geolocate = L.control.locate({ locateOptions: { maxZoom: self.geolocateZoom }}).addTo(self.map);
+
         
+      },
+      addMarkers: function(){
+        var self = this;
+        // self.geocodes=[{'label': 'DC', 'longitude': '77.0367', 'latitude':'38.8951'}];
+        
+        var geojson = self.input.map(function(place){
+          
+          return {
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": [place.longitude,place.latitude]
+            },
+            "properties": {
+              "title": place.label,
+              // "description": "1714 14th St NW, Washington DC",
+              "marker-color": "#fc4353",
+              "marker-size": "medium"
+              // "marker-symbol": "monument"
+            }
+          }
+
+        });
+        self.map.featureLayer.setGeoJSON(geojson);
+
       },
       accessTokenChanged: function(){
         var self = this;
 
         L.mapbox.accessToken = self.accessToken;
-        self._createMap();
+        self._createMap(); // TODO:  sometimes this gets called twice?
       },
       animate: function(){
-        var self = this;     
+        var self = this;    
+
+          if(self.input){
+
+            self.addMarkers();
+          } 
         if (self.geolocation && self.map){
           setTimeout(function(){
             self.geolocate.locate();  
@@ -147,6 +178,10 @@ Element providing the ability to create maps with the Mapbox API.
         if (self.startingLng && self.startingLng){
           self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
         }
+      },
+      inputChanged: function(){
+        var self = this;
+        self.addMarkers();
       }
 
     });
