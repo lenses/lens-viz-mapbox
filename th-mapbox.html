@@ -22,7 +22,7 @@ Element providing the ability to create maps with the Mapbox API.
 @status alpha
 @homepage http://github.com/thelmanews/th-mapbox/demo.html
 -->
-<polymer-element name="th-mapbox" extends="th-animated" attributes="accessTokenRoute accessToken mapId width height layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar input">
+<polymer-element name="th-mapbox" extends="th-animated" attributes="accessTokenRoute accessToken mapId width height layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar input markerColor">
 
   <template>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css' rel='stylesheet' />
@@ -30,8 +30,8 @@ Element providing the ability to create maps with the Mapbox API.
     <core-style ref="theme"></core-style>
     <style>
        #container {
-        position: absolute;
-        top:-15px;
+        position: relative;
+        /*top:-15px;*/
        }
        #map { 
         position:absolute; 
@@ -91,7 +91,7 @@ Element providing the ability to create maps with the Mapbox API.
         if (self.accessToken){
           self._createMap();
         }
-        cpm
+        
       },
       _receiveToken: function(event, r){
         var self = this;
@@ -131,8 +131,7 @@ Element providing the ability to create maps with the Mapbox API.
       },
       addMarkers: function(){
         var self = this;
-        // self.geocodes=[{'label': 'DC', 'longitude': '77.0367', 'latitude':'38.8951'}];
-        
+        var markerColor = self.markerColor || window.CoreStyle.g.theme.accent2;
         var geojson = self.input.map(function(place){
           
           return {
@@ -144,14 +143,18 @@ Element providing the ability to create maps with the Mapbox API.
             "properties": {
               "title": place.label,
               // "description": "1714 14th St NW, Washington DC",
-              "marker-color": "#fc4353",
-              "marker-size": "medium"
+              "marker-color": markerColor,
+              "marker-size": "small"
               // "marker-symbol": "monument"
             }
           }
 
         });
-        self.map.featureLayer.setGeoJSON(geojson);
+        var markers = self.map.featureLayer.setGeoJSON(geojson);
+
+        self.map.fitBounds(markers.getBounds());
+
+        
 
       },
       accessTokenChanged: function(){
