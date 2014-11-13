@@ -107,7 +107,6 @@ Element providing the ability to create maps with the Mapbox API.
           L.mapbox.accessToken = L.mapbox.accessToken || self.accessToken;
           // Create the map inside the div, given the mapId, default lat/long and zoom
           self.map = L.mapbox.map(mapContainer, self.mapId);
-          // L.marker([77.0367,38.8951]).addTo(self.map);
           
           // If starting coordinates given, set view at that point
           if (self.startingLng && self.startingLng){
