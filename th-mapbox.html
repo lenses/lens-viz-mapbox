@@ -62,7 +62,7 @@ Element providing the ability to create maps with the Mapbox API.
         on-core-response="{{_receiveToken}}">
       </core-ajax>
     </template>
-    <div id="container" style="width: {{width}}px; height: {{height}}px;">
+    <div id="container" style="width: {{computedWidth}}px; height: {{computedHeight}}px;">
       <div id='map'></div>
       <template if="{{showSwipeBar}}">
         <div class="swipearea submainpoint"> Swipe next here </div>
@@ -84,10 +84,15 @@ Element providing the ability to create maps with the Mapbox API.
       geolocation: false,
       geolocateZoom: 10,
       showSwipeBar: true,
-      width: 288,
-      height: 503,
+      width: '288',
+      height: '503',
       ready: function(){
         var self = this;
+
+        self.computedWidth = self.computeWidth(self.width);
+        self.computedHeight = self.computeHeight(self.height);
+        console.log(self.computedHeight);
+        console.log(self.computedWidth);
         if (self.accessToken){
           self._createMap();
         }
@@ -158,9 +163,10 @@ Element providing the ability to create maps with the Mapbox API.
       },
       accessTokenChanged: function(){
         var self = this;
-
-        L.mapbox.accessToken = self.accessToken;
-        self._createMap(); // TODO:  sometimes this gets called twice?
+        if(L.mapbox.accessToken != self.accessToken){
+          L.mapbox.accessToken = self.accessToken;
+          self._createMap(); 
+        }
       },
       animate: function(){
         var self = this;    
