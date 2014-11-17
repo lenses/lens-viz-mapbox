@@ -8,11 +8,8 @@
   ],
   "main": "th-mapbox.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^0.4.0",
+    "polymer": "Polymer/polymer#~0.5.1",
     "th-animated": "thelmanews/th-animated",
-    "core-ajax": "Polymer/core-ajax#~0.4.2"
-  },
-  "devDependencies": {
-    "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0"
+    "core-ajax": "polymer/core-ajax#~0.5.1"
   }
 }
