@@ -90,8 +90,7 @@ Element providing the ability to create maps with the Mapbox API.
 
         self.computedWidth = self.computeWidth(self.width);
         self.computedHeight = self.computeHeight(self.height);
-        console.log(self.computedHeight);
-        console.log(self.computedWidth);
+
         if (self.accessToken){
           self._createMap();
         }
@@ -115,11 +114,12 @@ Element providing the ability to create maps with the Mapbox API.
           self.map = L.mapbox.map(mapContainer, self.mapId);
           
           // If starting coordinates given, set view at that point (setTimeout needed otherwise there are tiling issues)
-          if (self.startingLng && self.startingLat){
-            setTimeout(function(){ 
+          self.map.on('ready', function(){
+            if (self.startingLng && self.startingLat){
               self.map.setView([self.startingLat, self.startingLng], self.startingZoom); 
-            },10)
-          }
+            }  
+          })
+          
           
           // Remove mapbox attribution/branding
           mapContainer.querySelector('.leaflet-control-attribution').remove();
