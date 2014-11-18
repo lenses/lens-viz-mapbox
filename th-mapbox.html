@@ -71,7 +71,7 @@ Element providing the ability to create maps with the Mapbox API.
     </div>
 
   </template>
-  <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.js'></script> 
+  <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.4/mapbox.js'></script>
   <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.js'></script>
 
   <script>
@@ -80,8 +80,6 @@ Element providing the ability to create maps with the Mapbox API.
       mapId: 'examples.map-i87786ca',
       layers: [],
       startingZoom: 12,
-      startingLat: 38.8922,
-      startingLng: -77.0348,
       geolocation: false,
       geolocateZoom: 10,
       showSwipeBar: true,
@@ -110,15 +108,19 @@ Element providing the ability to create maps with the Mapbox API.
         var self = this,
             mapContainer = self.$.map;
 
+          // Assign access token
           L.mapbox.accessToken = L.mapbox.accessToken || self.accessToken;
+          
           // Create the map inside the div, given the mapId, default lat/long and zoom
           self.map = L.mapbox.map(mapContainer, self.mapId);
           
-          // If starting coordinates given, set view at that point
-          if (self.startingLng && self.startingLng){
-            self.map.setView([self.startingLat,self.startingLng], self.startingZoom); 
+          // If starting coordinates given, set view at that point (setTimeout needed otherwise there are tiling issues)
+          if (self.startingLng && self.startingLat){
+            setTimeout(function(){ 
+              self.map.setView([self.startingLat, self.startingLng], self.startingZoom); 
+            },10)
           }
-
+          
           // Remove mapbox attribution/branding
           mapContainer.querySelector('.leaflet-control-attribution').remove();
 
@@ -131,36 +133,35 @@ Element providing the ability to create maps with the Mapbox API.
 
           // Add button for geolocation
           self.geolocate = L.control.locate({ locateOptions: { maxZoom: self.geolocateZoom }}).addTo(self.map);
-
+          
         
       },
       addMarkers: function(){
-        var self = this;
-        var markerColor = self.markerColor || window.CoreStyle.g.theme.accent2;
-        var geojson = self.input.map(function(place){
+        var self = this,
+            markerColor = self.markerColor || window.CoreStyle.g.theme.accent2,
+            
+            geojson = self.input.map(function(place){
           
-          return {
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": [place.longitude,place.latitude]
-            },
-            "properties": {
-              "title": place.label,
-              // "description": "1714 14th St NW, Washington DC",
-              "marker-color": markerColor,
-              "marker-size": "small"
-              // "marker-symbol": "monument"
-            }
-          }
+              return {
+                "type": "Feature",
+                "geometry": {
+                  "type": "Point",
+                  "coordinates": [place.longitude,place.latitude]
+                },
+                "properties": {
+                  "title": place.label,
+                  // "description": "1714 14th St NW, Washington DC",
+                  "marker-color": markerColor,
+                  "marker-size": "small"
+                  // "marker-symbol": "monument"
+                }
+              }
 
-        });
+            });
+        
         var markers = self.map.featureLayer.setGeoJSON(geojson);
 
         self.map.fitBounds(markers.getBounds());
-
-        
-
       },
       accessTokenChanged: function(){
         var self = this;
@@ -172,15 +173,14 @@ Element providing the ability to create maps with the Mapbox API.
       animate: function(){
         var self = this;    
 
-          if(self.input){
+        if(self.input){
+          self.addMarkers();
+        } 
 
-            self.addMarkers();
-          } 
         if (self.geolocation && self.map){
           setTimeout(function(){
             self.geolocate.locate();  
           },2000)
-          
         }
       },
       reset: function(){
