@@ -195,6 +195,11 @@ Element providing the ability to create maps with the Mapbox API.
       inputChanged: function(){
         var self = this;
         self.addMarkers();
+      },
+      resize: function() {
+
+           this.map.invalidateSize();
+          
       }
 
     });
