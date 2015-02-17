@@ -30,7 +30,7 @@ Element providing the ability to create maps with the Mapbox API.
     <style>
        :host {
          width: 100%;
-         height: 500px;
+         height: 100%;
        }
 
        #container {
@@ -136,6 +136,8 @@ Element providing the ability to create maps with the Mapbox API.
 
           // Add button for geolocation
           self.geolocate = L.control.locate({ locateOptions: { maxZoom: self.geolocateZoom }}).addTo(self.map);
+
+          self.resize();
           
         
       },
