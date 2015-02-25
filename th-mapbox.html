@@ -88,6 +88,12 @@ Element providing the ability to create maps with the Mapbox API.
       geolocation: false,
       geolocateZoom: 10,
       showSwipeBar: false,
+      observe: {
+        markerColor: "addMarkers",
+        startingZoom: "reset",
+        startingLat: "reset",
+        startingLng: "reset"
+      },
       ready: function(){
         var self = this;
 
@@ -202,6 +208,26 @@ Element providing the ability to create maps with the Mapbox API.
 
            this.map.invalidateSize();
           
+      },
+      getMetaData: function(){
+        return {
+          "name": "th-mapbox",
+          "description": "Wrapper for MapBox",
+          "category":"map",
+          "version": "0.0.1",
+          "thumbnail":"mapbox.jpg", 
+          "tags":["map", "mapbox"],
+          "inputAttr": {
+            "mapId":{"friendly":"Map ID", "type":"string", "default":""},
+            "markerColor":{"friendly":"Marker Color", "type":"string", "default":""},
+            "startingZoom":{"friendly":"Starting Zoom", "type":"range", "default":12, "range":[1,20]},
+            "startingLat":{"friendly":"Starting Latitude", "type":"float", "default":38.8922},
+            "startingLng":{"friendly":"Starting Longitude", "type":"float", "default":-77.0348},
+            "geolocation":{"friendly":"Geolocation?", "type":"boolean", "default": false},
+            "geolocateZoom":{"friendly":"Geolocate Zoom", "type":"range", "default":10, "range":[1,20]}
+           
+          }
+        }
       }
 
     });
