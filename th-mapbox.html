@@ -82,7 +82,7 @@ Element providing the ability to create maps with the Mapbox API.
   <script>
     Polymer({
       accessTokenRoute: '/admin/token/THELMA_MAPBOX_TOKEN',
-      mapId: 'examples.map-i87786ca',
+      mapId: 'thelma.jpff0bf2',
       layers: [],
       startingZoom: 12,
       geolocation: false,
@@ -148,31 +148,33 @@ Element providing the ability to create maps with the Mapbox API.
         
       },
       addMarkers: function(){
-        var self = this,
-            markerColor = self.markerColor || window.CoreStyle.g.theme.accent2,
+        if (this.input && this.input.length){
+          var self = this,
+              markerColor = self.markerColor || window.CoreStyle.g.theme.accent2,
+              
+              geojson = self.input.map(function(place){
             
-            geojson = self.input.map(function(place){
-          
-              return {
-                "type": "Feature",
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [place.longitude,place.latitude]
-                },
-                "properties": {
-                  "title": place.label,
-                  // "description": "1714 14th St NW, Washington DC",
-                  "marker-color": markerColor,
-                  "marker-size": "small"
-                  // "marker-symbol": "monument"
+                return {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Point",
+                    "coordinates": [place.longitude,place.latitude]
+                  },
+                  "properties": {
+                    "title": place.label,
+                    // "description": "1714 14th St NW, Washington DC",
+                    "marker-color": markerColor,
+                    "marker-size": "small"
+                    // "marker-symbol": "monument"
+                  }
                 }
-              }
 
-            });
-        
-        var markers = self.map.featureLayer.setGeoJSON(geojson);
+              });
+          
+          var markers = self.map.featureLayer.setGeoJSON(geojson);
 
-        self.map.fitBounds(markers.getBounds());
+          self.map.fitBounds(markers.getBounds());
+        }
       },
       accessTokenChanged: function(){
         var self = this;
@@ -184,7 +186,7 @@ Element providing the ability to create maps with the Mapbox API.
       animate: function(){
         var self = this;    
 
-        if(self.input){
+        if(self.input && self.input.length){
           self.addMarkers();
         } 
 
