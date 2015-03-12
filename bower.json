@@ -1,12 +1,12 @@
 {
-  "name": "th-mapbox",
+  "name": "lens-viz-mapbox",
   "version": "0.0.0",
   "keywords": [
-    "seed",
+    "lenses",
     "polymer",
     "web-components"
   ],
-  "main": "th-mapbox.html",
+  "main": "lens-viz-mapbox.html",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.1",
     "th-animated": "thelmanews/th-animated",
