@@ -8,20 +8,20 @@ Element providing the ability to create maps with the Mapbox API.
 
 ##### Example
 
-      <th-mapbox 
+      <lens-viz-mapbox 
           animateOnInit="true" 
           mapId="examples.map-i87786ca" 
           layers="[{'layerId': 'examples.bike-lanes'},{'layerId': 'examples.bike-locations'}]" 
           startingLat="38.8922" 
           startingLng="-77.0348"
-      ></th-mapbox>
+      ></lens-viz-mapbox>
 
-@element th-mapbox
+@element lens-viz-mapbox
 @blurb Element providing the ability to create maps with the Mapbox API.
 @status alpha
-@homepage http://github.com/thelmanews/th-mapbox/demo.html
+@homepage http://github.com/thelmanews/lens-viz-mapbox/demo.html
 -->
-<polymer-element name="th-mapbox" extends="th-animated" attributes="accessTokenRoute accessToken mapId layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar input markerColor">
+<polymer-element name="lens-viz-mapbox" extends="th-animated" attributes="accessTokenRoute accessToken mapId layers geolocation geolocateZoom startingZoom startingLat startingLng showSwipeBar input markerColor">
 
   <template>
     <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css' rel='stylesheet' />
@@ -213,7 +213,7 @@ Element providing the ability to create maps with the Mapbox API.
       },
       getMetaData: function(){
         return {
-          "name": "th-mapbox",
+          "name": "lens-viz-mapbox",
           "description": "Wrapper for MapBox",
           "category":"map",
           "version": "0.0.1",
