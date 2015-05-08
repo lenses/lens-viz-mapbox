@@ -9,6 +9,7 @@
   "main": "lens-viz-mapbox.html",
   "dependencies": {
     "polymer": "Polymer/polymer#~0.5.1",
+    "th-theme": "thelmanews/th-theme",
     "th-animated": "thelmanews/th-animated",
     "core-ajax": "polymer/core-ajax#~0.5.1"
   }
