@@ -8,7 +8,6 @@ Element providing the ability to create maps with the Mapbox API.
 (data taken from https://www.mapbox.com/mapbox.js/example/v1.0.0/layers/)
 
       <lens-viz-mapbox 
-          animateOnInit="true" 
           mapId="mapbox.streets" 
           layers="[{'layerId': 'examples.bike-lanes'},{'layerId': 'examples.bike-locations'}]" 
           startingLat="38.8922" 
@@ -20,10 +19,7 @@ Element providing the ability to create maps with the Mapbox API.
 @status alpha
 @homepage http://github.com/thelmanews/lens-viz-mapbox/demo.html
 -->
-<!--
-    TODO(polyup): Inheriting from other custom elements is not yet supported.
-    See: https://www.polymer-project.org/1.0/docs/migration.html#inheritance
- -->
+
 <dom-module id="lens-viz-mapbox">
   <link rel="import" type="css" href="https://api.tiles.mapbox.com/mapbox.js/v2.1.2/mapbox.css">
   <link rel="import" type="css" href="https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.24.0/L.Control.Locate.css">
@@ -62,9 +58,8 @@ Element providing the ability to create maps with the Mapbox API.
     }
   </style>
   <template>
-    <core-style ref="theme"></core-style>
     <template is="dom-if" if="{{accessTokenRoute}}">
-      <iron-ajax auto="" id="token" url="{{accessTokenRoute}}" handle-as="text" on-core-response="_receiveToken">
+      <iron-ajax auto id="token" url="{{accessTokenRoute}}" handle-as="text" on-response="_receiveToken">
       </iron-ajax>
     </template>
     <div id="container">
@@ -85,7 +80,6 @@ Element providing the ability to create maps with the Mapbox API.
           notify: true,
           observer: 'accessTokenChanged'
         },
-        accessTokenRoute: { notify: true },
         geolocateZoom: {
           type: Number,
           value: 10,
@@ -131,7 +125,7 @@ Element providing the ability to create maps with the Mapbox API.
         },
         startingZoom: {
           type: Number,
-          value: 12,
+          value: 14,
           notify: true,
           observer: 'reset'
         }
@@ -157,14 +151,18 @@ Element providing the ability to create maps with the Mapbox API.
       _createMap: function () {
         var self = this, 
             mapContainer = self.$.map;
+
         // Assign access token
         L.mapbox.accessToken = L.mapbox.accessToken || self.accessToken;
 
         // Create the map inside the div, given the mapId, default lat/long and zoom
         if (!self.map){
+
         self.map = L.mapbox.map(mapContainer, self.mapId);
+
         // If starting coordinates given, set view at that point (setTimeout needed otherwise there are tiling issues)
         self.map.on('ready', function () {
+          console.log("map ready");
           if (self.startingLng && self.startingLat) {
             self.map.setView([
               self.startingLat,
@@ -189,9 +187,8 @@ Element providing the ability to create maps with the Mapbox API.
         
       },
       addMarkers: function () {
-        
         if (this.input && this.input.length) {
-          var self = this, markerColor = self.markerColor || window.CoreStyle.g.theme.accent2, geojson = self.input.map(function (place) {
+          var self = this, markerColor = self.markerColor, geojson = self.input.map(function (place) {
               return {
                 'type': 'Feature',
                 'geometry': {
@@ -243,7 +240,9 @@ Element providing the ability to create maps with the Mapbox API.
       },
       inputChanged: function () {
         var self = this;
-        self.addMarkers();
+        if (self.map){
+          self.addMarkers();
+        }
       },
       resize: function () {
         this.map.invalidateSize();
